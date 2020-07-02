@@ -1,13 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
-import 'bulma/css/bulma.css'
+import { ThemeProvider, CSSReset  } from "@chakra-ui/core";
 
 import App from './App';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+    <ThemeProvider>
+        <CSSReset />
+        <React.StrictMode>
+            <App />
+        </React.StrictMode>
+    </ThemeProvider>,
+    document.getElementById('root')
 );

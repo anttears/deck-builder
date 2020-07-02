@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import unescape from 'lodash.unescape';
+import { List, ListItem, ListIcon, Link } from "@chakra-ui/core";
+import { MdWebAsset } from 'react-icons/md';
+
 
 import { fetchSets, fetchCards } from '../../actions/fetch';
 import { setName } from '../../actions/set';
-import './sets.css';
 
 class Sets extends Component {
 
@@ -28,26 +30,26 @@ class Sets extends Component {
         if (this.props.sets.setList.length) {
             const currentSetName = decodeURIComponent(this.props.sets.currentSetName);
             return (this.props.sets.setList.map(set => {
+
+                const bgColour = set.name === currentSetName ? 'gray.200' : null;
+
                 return (
-                    <li key={ set._id } data-set-name={ set.name } onClick={ this.onSelected } className={ set.name === currentSetName ? 'panel-block is-active' : 'panel-block' }>
-                        <span className="panel-icon">
-                            <i className="fas fa-book" aria-hidden="true"></i>
-                        </span>{ unescape(set.name) }
-                    </li>)
+                    <ListItem py={3} borderBottom="1px" borderColor="gray.300" key={ set._id } bg={ bgColour }>
+                        <ListIcon as={ MdWebAsset } ml={3}/>
+                        <Link data-set-name={ set.name } onClick={ this.onSelected }>{ unescape(set.name) }</Link>
+                    </ListItem>
+                )
             }));
         }
         
-        return <li key="1">No Sets available</li>   
+        return <ListItem borderBottom="1px" borderColor="gray.200" p={3}>No Sets available</ListItem>
     };
 
     render() {
         return(
-            <nav className="panel">
-                <p className="panel-heading">Available Sets</p>
-                <ul className="set-list">
-                    { this.getSetList() }
-                </ul>
-            </nav>
+            <List bg="gray.400">
+                { this.getSetList() }
+            </List>
         )
     };
 };

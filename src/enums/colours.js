@@ -8,10 +8,10 @@ export const COLUMN_ENUM = {
 };
 
 export const COLOUR_CLASS = {
-    'R': 'mana-red',
-    'G': 'mana-green',
-    'W': 'mana-white',
-    'B': 'mana-black',
-    'U': 'mana-blue',
-    'N': 'mana-neutral'
+    'R': 'red.600',
+    'G': 'green.700',
+    'W': 'white',
+    'B': 'black',
+    'U': 'blue.400',
+    'N': 'gray.200'
 };

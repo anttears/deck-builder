@@ -1,7 +1,0 @@
-.set-list li {
-    cursor: pointer;
-}
-
-.set-list li.is-active {
-    color: #3c56d5;
-}

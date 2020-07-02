@@ -1,11 +1,24 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import unescape from 'lodash.unescape';
+import {
+    Accordion,
+    AccordionItem,
+    AccordionHeader,
+    AccordionPanel,
+    AccordionIcon,
+    Box,
+    Grid,
+    Stack,
+    Text,
+    IconButton
+} from "@chakra-ui/core";
+import { BsCircleFill, BsCardList } from 'react-icons/bs';
+import { FaPlusCircle, FaMinusCircle, FaLandmark } from 'react-icons/fa';
 
 import { COLOUR_CLASS } from '../../enums/colours';
 import { addCard, removeCard } from '../../actions/deck';
 
-import './cards.css';
 
 class Cards extends Component {
     constructor(props) {
@@ -18,46 +31,54 @@ class Cards extends Component {
         this.convertManaToSymbol.bind(this);
         this.getAddRemoveButtons.bind(this);
         this.addRemoveCard.bind(this);
-        this.toggleCardList.bind(this);
     }
 
     getCardsFromSet = () => {
         const sortedCards = this.props.cards.sortedCards;
 
         if (sortedCards.land) {
-            return Object.entries(sortedCards).map(([identity, cardSubset]) => {
-                if (identity === 'land') {
-                    return this.processLands(cardSubset);
+            return(<Accordion allowMultiple>
+                { 
+                    Object.entries(sortedCards).map(([identity, cardSubset]) => {
+                        if (identity === 'land') {
+                            return this.processLands(cardSubset);
+                        }
+                        return this.processColours(cardSubset)
+                    })
                 }
-                return this.processColours(cardSubset)
-            });
+            </Accordion>
+            )
         }
 
         return (
-            <p>No cards to display as no set chosen</p>
+            <Text p="3">No cards to display as no set chosen</Text>
         )
     }
+
+    /**
+     * Playing cards
+     */
 
     processColours = (cardSubset) => {
         const cardList = cardSubset.cards.map(card => this.getColourCard(card));
 
         return (
-            <div className="cards">
-                <h2 className="is-clearfix">
-                    <span className="icon">
-                        <i className="fas fa-address-card" aria-hidden="true"></i>
-                    </span>
-                    <span>{ cardSubset.colourTitle }</span>
-                    <span className="icon is-pulled-right" onClick={ this.toggleCardList }>
-                        <i className="fas fa-angle-down" aria-hidden="true"></i>
-                    </span>
-                </h2>
-                <div className="card-list">
-                    <div className="flex-row">
-                        { cardList }   
-                    </div>
-                </div>
-            </div>
+            <AccordionItem>
+                <AccordionHeader>
+                    <Box flex="1" textAlign="left">
+                        <Stack isInline>                
+                            <Box as={BsCardList} mt="1"/>
+                            <Text textShadow="1px 1px #ccc">{ cardSubset.colourTitle }</Text>
+                        </Stack>
+                    </Box>
+                    <AccordionIcon />
+                </AccordionHeader>
+                <AccordionPanel pb={4}>
+                <Grid templateColumns="repeat(4, 1fr)" gap={6}>
+                    { cardList } 
+                </Grid>
+                </AccordionPanel>
+            </AccordionItem>
         )
     }
 
@@ -67,54 +88,51 @@ class Cards extends Component {
         });
 
         const abilities = card.abilities ? card.abilities.map(ability => <p>{ unescape(ability) }</p>) : null;
-        const power = card.power === null ? '' : <span className="tag is-dark is-pulled-right">{ `${card.power} / ${card.toughness}` }</span>;  
-        const subType = card.subTypes.length ? `- ${card.subTypes.join(' ')}` : '';
-        const type = `${card.types.join(' ')} ${subType}`;  
+        const power = <Text>{ `${card.power || '-'} / ${card.toughness || '-'}` }</Text>;  
+        const subType = card.subTypes.length ? `${card.subTypes.join(' ')} -` : '';
+        const type = `${subType} ${card.types.join(' ')}`;  
         const add = this.getAddRemoveButtons(card.uuid);
 
         return(
-            <div className="tile is-parent is-3">
-                <article className="message card">
-                    <div className="message-header">
-                        <p className="card-name is-clearfix"><span className="icons is-pulled-right">{ mana }</span> <span>{ unescape(card.name) }</span></p>
-                    </div>
-                    <div className="message-body">
-                        <p className="card-type">{ type }</p>
-                        { abilities }
-                        <p className="flavour-text">{ unescape(card.flavorText) }</p>
-                    </div>
-                    <div className="message-footer is-clearfix">
-                        { power }  
-                        { add }
-                    </div>
-                </article>
-            </div>
+            <Box w="100%" d="flex" flexDirection="column" border="1px" borderRadius="md" borderColor="gray.400">
+                <Box fontSize="sm" d="flex" p={2} borderBottom="1px" bg="gray.300" borderColor="gray.400">
+                    <Box flexGrow="1">{ unescape(card.name) }</Box> <Stack isInline>{ mana }</Stack>
+                </Box>
+                <Box p={2} fontSize="sm" border-bottom="1px" bg="gray.300" borderColor="gray.500">{ type }</Box>
+                <Box p={2} fontSize="sm" border-bottom="1px" borderColor="gray.400" bg="gray.200">{ abilities }</Box>
+                <Box p={2} flexGrow="1" fontSize="xs" border-bottom="1px" borderColor="gray.400" bg="gray.200">{ unescape(card.flavorText) }</Box>
+                <Box bg="gray.300" d="flex" p={2}>
+                    <Box flexGrow="1">{ power }</Box><Box>{ add }</Box>
+                </Box>
+            </Box>
         );
     }
 
-    convertManaToSymbol = colour => {
-        const isInt = Number.isInteger(colour);
-        const cls = isInt ? `${COLOUR_CLASS['N']}` : `fas fa-circle ${COLOUR_CLASS[colour]}`;
-        const value = isInt ? colour : '';
+    /**
+     * Lands - TODO change data structure to just render a card
+     */
 
+    processLands = cardSubset => {
+        const cardList = cardSubset.map(card => this.getLandCard(card));
+        
         return (
-            <span className={ `icon mana` }>
-                <i className={ cls } aria-hidden="true">{ value }</i>
-            </span> 
-        );
-    }
-
-    getAddRemoveButtons = uuid => {
-        return (
-            <div className="card-buttons">
-                <span className={ `icon buttons` }>
-                    <i data-uuid={uuid} data-type="remove" className="fas fa-minus-circle" onClick={ this.addRemoveCard } aria-hidden="true"></i>
-                </span>
-                <span className={ `icon buttons` }>
-                    <i className="fas fa-plus-circle" onClick={ this.addRemoveCard } data-uuid={uuid} data-type="add" aria-hidden="true"></i>
-                </span>       
-            </div>
-        );
+            <AccordionItem>
+                <AccordionHeader>
+                    <Box flex="1" textAlign="left">
+                        <Stack isInline>                
+                            <Box as={FaLandmark} mt="1"/>
+                            <Text textShadow="1px 1px #ccc">Land</Text>
+                        </Stack>
+                    </Box>
+                    <AccordionIcon />
+                </AccordionHeader>
+                <AccordionPanel pb={4}>
+                <Grid templateColumns="repeat(4, 1fr)" gap={6}>
+                    { cardList } 
+                </Grid>
+                </AccordionPanel>
+            </AccordionItem>          
+        )
     }
 
     getLandCard = card => {
@@ -123,80 +141,67 @@ class Cards extends Component {
         });
 
         const abilities = card.abilities.map((ability, i) => <p key={ `unescape(ability)_${i}` }>{ unescape(ability) }</p>);
+        const add = this.getAddRemoveButtons(card.uuid);
 
         return(
-            <div className="tile is-parent is-3">
-                <article className="message card">
-                    <div className="message-header ">
-                        <p><span className="icons">{ mana }</span> <span>{ unescape(card.name) }</span></p>
-                    </div>
-                    <div className="message-body">
-                        { abilities }
-                        <p className="flavour-text">{ unescape(card.flavorText) }</p>
-                    </div>
-                </article>
-            </div>
+            <Box w="100%" d="flex" flexDirection="column" border="1px" borderRadius="md" borderColor="gray.400">
+                <Box fontSize="sm" d="flex" p={2} borderBottom="1px" bg="gray.300" borderColor="gray.400">
+                    <Box flexGrow="1">{ unescape(card.name) }</Box> <Stack isInline alignItems="right">{ mana }</Stack>
+                </Box>
+                <Box p={2} fontSize="sm" border-bottom="1px" borderColor="gray.400" bg="gray.200">{ abilities }</Box>
+                <Box p={2} flexGrow="1" fontSize="xs" border-bottom="1px" borderColor="gray.400" bg="gray.200">{ unescape(card.flavorText) }</Box>
+                <Box bg="gray.300" p={2}>{ add }</Box>
+            </Box>
         );
     }
 
-    processLands = cardSubset => {
-        const cardList = cardSubset.map(card => this.getLandCard(card));
+    /**
+     * Helpers
+     */
 
-        return (
-            <div className="cards">
-                <h2 className="is-clearfix">
-                    <span className="icon">
-                        <i className="fas fa-landmark" aria-hidden="true"></i>
-                    </span>
-                    <span>Land</span>
-                    <span className="icon is-pulled-right" onClick={ this.toggleCardList }>
-                        <i className="fas fa-angle-down" aria-hidden="true"></i>
-                    </span>
-                </h2>
-                <div className="card-list">
-                    <div className="flex-row">
-                        { cardList }   
-                    </div>
-                </div>
-            </div>           
-        )
+    convertManaToSymbol = colour => {
+        const isInt = Number.isInteger(colour);
+        const colourValue = isInt ? '' : `${COLOUR_CLASS[colour]}`;
+        const value = isInt ? colour : '';
+        let box = <Box as={BsCircleFill} mt={1} color={ colourValue } />;
+        if (isInt) {
+            box = <Box color={ colourValue }>{ value }</Box>
+        }
+
+        return box;
     }
+
+    getAddRemoveButtons = uuid => {
+        return (
+            <Box d="flex" flexDirection="row" justifyContent="flex-end" fontSize="lg">
+                <IconButton aria-label="Add card" variant="outline" variantColor="black" size="sm" icon={FaPlusCircle} mr={1} data-uuid={ uuid } data-type="add" onClick={ this.addRemoveCard }/>
+                <IconButton aria-label="Remove card" variant="outline" variantColor="black" size="sm" icon={FaMinusCircle} mr={1} data-uuid={ uuid } data-type="remove" onClick={ this.addRemoveCard }/>
+            </Box>
+        );
+    }
+    
+    /**
+     * Functionality
+     */
 
     addRemoveCard = e => {
         const dataset = e.target.dataset;
         if (dataset.type === 'add') {
             this.props.addCard(dataset.uuid, this.props.cards.cardList);
-        } else {
+        } else if (dataset.type === 'remove') {
             this.props.removeCard(dataset.uuid, this.props.cards.cardList);    
         }
     }
 
-    toggleCardList = e => {
-        let parent = e.target.parentNode;
-        while (parent.parentNode) {
-            if (parent.classList.contains('cards')) {
-                const cardList = parent.getElementsByClassName('card-list')[0];
-                if (cardList.classList.contains('hide')) {
-                    cardList.classList.remove('hide');
-                    e.target.classList.add('fa-angle-down');
-                    e.target.classList.remove('fa-angle-up');
-                } else {
-                    cardList.classList.add('hide');  
-                    e.target.classList.remove('fa-angle-down');
-                    e.target.classList.add('fa-angle-up');  
-                }
-                break;
-            } else {
-                parent = parent.parentNode;
-            }
-        }
-    }
+    /**
+     * Render
+     */
 
     render() {
         return(
-            <div className="card-list">
+            <>
                 { this.getCardsFromSet() }
-            </div>
+            </>
         )
     };
 };

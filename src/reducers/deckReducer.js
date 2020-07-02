@@ -1,5 +1,5 @@
 import { ADD_CARD_TO_DECK, REMOVE_CARD_FROM_DECK } from '../actions/types';
-import { addCard } from '../utils/deck';
+import { addCard, removeCard } from '../utils/deck';
 
 const initialState = {
     lands: {},
@@ -11,11 +11,14 @@ export default (state = initialState, action) => {
         case ADD_CARD_TO_DECK:
             return {
                 ...state,
-                cards: {
-                    ...state.cards,
-                    [action.payload.uuid]: addCard(action.payload, state.cards)
-                }
+                cards: addCard(action.payload, state.cards)
             };
+
+        case REMOVE_CARD_FROM_DECK:
+            return {
+                ...state,
+                cards: removeCard(action.payload, state.cards)
+            }
         default:
             return state;
     }
