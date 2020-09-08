@@ -7,7 +7,7 @@ const getColourIdentity = card => {
     }
 
     colourIdentity.id = card.colorIdentity.join('');
-    colourIdentity.title = card.colorIdentity.map(colourCode => COLUMN_ENUM[colourCode]).join(' ');
+    colourIdentity.title = card.colorIdentity.map(colourCode => COLUMN_ENUM[colourCode]).join(' ') || 'Neutral';
 
     return colourIdentity;
 };

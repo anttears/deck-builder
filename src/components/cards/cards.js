@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import unescape from 'lodash.unescape';
 import {
     Accordion,
     AccordionItem,
@@ -87,7 +86,7 @@ class Cards extends Component {
             return this.convertManaToSymbol(colour);
         });
 
-        const abilities = card.abilities ? card.abilities.map(ability => <p>{ unescape(ability) }</p>) : null;
+        const abilities = card.abilities ? card.abilities.map(ability => <p>{ ability }</p>) : null;
         const power = <Text>{ `${card.power || '-'} / ${card.toughness || '-'}` }</Text>;  
         const subType = card.subTypes.length ? `${card.subTypes.join(' ')} -` : '';
         const type = `${subType} ${card.types.join(' ')}`;  
@@ -96,11 +95,11 @@ class Cards extends Component {
         return(
             <Box w="100%" d="flex" flexDirection="column" border="1px" borderRadius="md" borderColor="gray.400">
                 <Box fontSize="sm" d="flex" p={2} borderBottom="1px" bg="gray.300" borderColor="gray.400">
-                    <Box flexGrow="1">{ unescape(card.name) }</Box> <Stack isInline>{ mana }</Stack>
+                    <Box flexGrow="1">{ card.name }</Box> <Stack isInline>{ mana }</Stack>
                 </Box>
                 <Box p={2} fontSize="sm" border-bottom="1px" bg="gray.300" borderColor="gray.500">{ type }</Box>
                 <Box p={2} fontSize="sm" border-bottom="1px" borderColor="gray.400" bg="gray.200">{ abilities }</Box>
-                <Box p={2} flexGrow="1" fontSize="xs" border-bottom="1px" borderColor="gray.400" bg="gray.200">{ unescape(card.flavorText) }</Box>
+                <Box p={2} flexGrow="1" fontSize="xs" border-bottom="1px" borderColor="gray.400" bg="gray.200">{ card.flavorText }</Box>
                 <Box bg="gray.300" d="flex" p={2}>
                     <Box flexGrow="1">{ power }</Box><Box>{ add }</Box>
                 </Box>
@@ -140,16 +139,16 @@ class Cards extends Component {
             return this.convertManaToSymbol(color);
         });
 
-        const abilities = card.abilities.map((ability, i) => <p key={ `unescape(ability)_${i}` }>{ unescape(ability) }</p>);
+        const abilities = card.abilities.map((ability, i) => <p key={ `ability_${i}` }>{ ability }</p>);
         const add = this.getAddRemoveButtons(card.uuid);
 
         return(
             <Box w="100%" d="flex" flexDirection="column" border="1px" borderRadius="md" borderColor="gray.400">
                 <Box fontSize="sm" d="flex" p={2} borderBottom="1px" bg="gray.300" borderColor="gray.400">
-                    <Box flexGrow="1">{ unescape(card.name) }</Box> <Stack isInline alignItems="right">{ mana }</Stack>
+                    <Box flexGrow="1">{ card.name }</Box> <Stack isInline alignItems="right">{ mana }</Stack>
                 </Box>
                 <Box p={2} fontSize="sm" border-bottom="1px" borderColor="gray.400" bg="gray.200">{ abilities }</Box>
-                <Box p={2} flexGrow="1" fontSize="xs" border-bottom="1px" borderColor="gray.400" bg="gray.200">{ unescape(card.flavorText) }</Box>
+                <Box p={2} flexGrow="1" fontSize="xs" border-bottom="1px" borderColor="gray.400" bg="gray.200">{ card.flavorText }</Box>
                 <Box bg="gray.300" p={2}>{ add }</Box>
             </Box>
         );

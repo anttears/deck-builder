@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import unescape from 'lodash.unescape';
 import { List, ListItem, ListIcon, Box, Tag, IconButton } from "@chakra-ui/core";
 import { RiBankCard2Line } from 'react-icons/ri';
 import { FaPlusCircle, FaMinusCircle } from 'react-icons/fa';
@@ -20,7 +19,7 @@ class Deck extends Component {
                 <Box d="flex" flexDirection="column" flexGrow="1">
                     <Box d="flex" flexDirection="row" alignItems="center">
                         <ListIcon as={ RiBankCard2Line } ml={3} d="flex"/>
-                        <Box flexGrow="1">{ unescape(deckInfo.cardName) }</Box>
+                        <Box flexGrow="1">{ deckInfo.cardName }</Box>
                     </Box>
                     <Box d="flex" flexDirection="row" alignItems="center" px={3} fontSize="sm">
                         <Box mr="3" ml="6">{ deckInfo.type }</Box>

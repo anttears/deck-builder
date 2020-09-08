@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { Box, Heading, Stack, Text, Grid } from "@chakra-ui/core";
 import { FaDiceD20 } from 'react-icons/fa';
 
-import './app.css';
+import './App.css';
 
 import store from './store';
 import Sets from './components/sets/Sets';
