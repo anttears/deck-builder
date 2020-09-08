@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import unescape from 'lodash.unescape';
 import { List, ListItem, ListIcon, Link } from "@chakra-ui/core";
 import { MdWebAsset } from 'react-icons/md';
 
@@ -21,14 +20,14 @@ class Sets extends Component {
     }
 
     onSelected = (e) => {
-        const setName = encodeURIComponent(e.target.dataset.setName);
+        const setName = e.target.dataset.setName;
         this.props.setName(setName);
         this.props.fetchCards(setName);
     }
 
     getSetList = () => {
         if (this.props.sets.setList.length) {
-            const currentSetName = decodeURIComponent(this.props.sets.currentSetName);
+            const currentSetName = this.props.sets.currentSetName;
             return (this.props.sets.setList.map(set => {
 
                 const bgColour = set.name === currentSetName ? 'gray.200' : null;
@@ -36,7 +35,7 @@ class Sets extends Component {
                 return (
                     <ListItem py={3} borderBottom="1px" borderColor="gray.300" key={ set._id } bg={ bgColour }>
                         <ListIcon as={ MdWebAsset } ml={3}/>
-                        <Link data-set-name={ set.name } onClick={ this.onSelected }>{ unescape(set.name) }</Link>
+                        <Link data-set-name={ set.name } onClick={ this.onSelected }>{ set.name }</Link>
                     </ListItem>
                 )
             }));
